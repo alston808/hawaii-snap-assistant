@@ -9,7 +9,8 @@
     "start:mock": "tsx src/index.ts --mock",
     "build": "tsc",
     "test": "tsx test-dialog.ts",
-    "test:mock": "tsx test-mock-flow.ts"
+    "test:mock": "tsx test-mock-flow.ts",
+    "package:extension": "cd chrome-extension && zip -FSr ../hawaii-snap-assistant-chrome.zip . -x '*.DS_Store'"
   },
   "dependencies": {
     "dotenv": "^18.0.7",

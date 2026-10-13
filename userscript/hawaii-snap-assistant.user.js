@@ -5,6 +5,8 @@
 // @description  AI Voice-guided assistant and auto-navigator for Hawaii DHS PAIS benefits portal
 // @author       alston808
 // @match        https://pais-benefits.dhs.hawaii.gov/*
+// @downloadURL  https://raw.githubusercontent.com/alston808/hawaii-snap-assistant/main/userscript/hawaii-snap-assistant.user.js
+// @updateURL    https://raw.githubusercontent.com/alston808/hawaii-snap-assistant/main/userscript/hawaii-snap-assistant.user.js
 // @grant        GM_xmlhttpRequest
 // @grant        GM_setValue
 // @grant        GM_getValue
