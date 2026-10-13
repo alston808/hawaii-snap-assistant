@@ -2,8 +2,8 @@
 (function() {
   'use strict';
 
-  // Configurable Worker Gateway (or replace with your Cloudflare Worker URL)
-  let workerUrl = 'https://hawaii-snap-assistant-gateway.workers.dev';
+  // Live Cloudflare Worker Gateway
+  let workerUrl = 'https://hawaii-snap-assistant-gateway.alstonalika.workers.dev';
 
   // Form field steps mapped directly to Hawaii DHS PAIS DOM
   const FORM_STEPS = [
