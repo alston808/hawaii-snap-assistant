@@ -1,0 +1,11 @@
+{
+  "mcp": {
+    "mcpmux": {
+      "type": "remote",
+      "url": "http://localhost:45818/mcp",
+      "headers": {
+        "X-Mcpmux-Workspace": "/home/alston/hawaii-snap-assistant"
+      }
+    }
+  }
+}

@@ -1,0 +1,29 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Environment and secrets (NEVER commit secrets!)
+.env
+.env.local
+.env.*.local
+
+# Build output
+dist/
+build/
+*.tsbuildinfo
+
+# Playwright artifacts
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/
+.playwright-mcp/
+
+# Cloudflare Wrangler
+.wrangler/
+
+# System and IDE
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

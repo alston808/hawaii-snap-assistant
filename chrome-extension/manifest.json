@@ -1,0 +1,21 @@
+{
+  "manifest_version": 3,
+  "name": "Hawaii SNAP Voice Assistant (Uncle Keoki)",
+  "version": "1.0.0",
+  "description": "AI voice-guided assistant helping Hawaii residents navigate and complete DHS PAIS benefits applications.",
+  "action": {
+    "default_title": "Uncle Keoki Hawaii SNAP Guide",
+    "default_popup": "popup.html"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://pais-benefits.dhs.hawaii.gov/*"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "host_permissions": [
+    "https://pais-benefits.dhs.hawaii.gov/*",
+    "https://*.workers.dev/*"
+  ]
+}
