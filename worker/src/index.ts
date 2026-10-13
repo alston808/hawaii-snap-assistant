@@ -65,28 +65,64 @@ export default {
           });
         }
 
-        if (env.FISH_API_KEY) {
-          const ttsRes = await fetch('https://api.fish.audio/v1/tts', {
-            method: 'POST',
-            headers: {
-              Authorization: `Bearer ${env.FISH_API_KEY}`,
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              text,
-              model: 's2.1-pro-free',
-              reference_id: env.FISH_VOICE_ID || null,
-            }),
-          });
+        // Try OpenRouter first (Fish Audio s2.1-pro-free:free)
+        if (env.OPENROUTER_API_KEY) {
+          try {
+            const orRes = await fetch('https://openrouter.ai/api/v1/audio/speech', {
+              method: 'POST',
+              headers: {
+                Authorization: `Bearer ${env.OPENROUTER_API_KEY}`,
+                'Content-Type': 'application/json',
+                'HTTP-Referer': 'https://pais-benefits.dhs.hawaii.gov/',
+                'X-Title': 'Uncle Keoki Hawaii SNAP Voice Assistant',
+              },
+              body: JSON.stringify({
+                model: 'fish-audio/s2.1-pro-free:free',
+                input: text,
+                response_format: 'mp3',
+              }),
+            });
 
-          const audioBlob = await ttsRes.arrayBuffer();
-          return new Response(audioBlob, {
-            headers: { ...CORS_HEADERS, 'Content-Type': 'audio/mpeg' },
-          });
+            if (orRes.ok) {
+              const audioBlob = await orRes.arrayBuffer();
+              return new Response(audioBlob, {
+                headers: { ...CORS_HEADERS, 'Content-Type': 'audio/mpeg' },
+              });
+            }
+          } catch (e) {
+            console.error('OpenRouter TTS error:', e);
+          }
         }
 
-        return new Response(JSON.stringify({ error: 'TTS not configured' }), {
-          status: 501,
+        // Direct Fish Audio fallback
+        if (env.FISH_API_KEY) {
+          try {
+            const ttsRes = await fetch('https://api.fish.audio/v1/tts', {
+              method: 'POST',
+              headers: {
+                Authorization: `Bearer ${env.FISH_API_KEY}`,
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                text,
+                model: 's2.1-pro-free',
+                reference_id: env.FISH_VOICE_ID || null,
+              }),
+            });
+
+            if (ttsRes.ok) {
+              const audioBlob = await ttsRes.arrayBuffer();
+              return new Response(audioBlob, {
+                headers: { ...CORS_HEADERS, 'Content-Type': 'audio/mpeg' },
+              });
+            }
+          } catch (e) {
+            console.error('Fish Audio direct error:', e);
+          }
+        }
+
+        return new Response(JSON.stringify({ error: 'TTS unavailable, please use browser voice fallback' }), {
+          status: 503,
           headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
         });
       }
@@ -107,17 +143,17 @@ export default {
           },
           body: JSON.stringify({
             model: 'llama-3.3-70b-versatile',
-            temperature: 0.1,
+            temperature: 0.2,
             response_format: { type: 'json_object' },
             messages: [
               {
                 role: 'system',
                 content:
-                  'You are Uncle Keoki, a warm Hawaii Food Stamps assistant. Extract the intent and clean value as JSON: {"action": "fill"|"skip"|"back", "cleanValue": string, "keokiReply": string}. Use local Hawaii warmth without overly dense pidgin.',
+                  'You are Uncle Keoki: a warm, energetic, beloved Hawaii kupuna helping local island families apply for SNAP food stamps. You have great aloha spirit, humor, and heart—never cold or clinical! You use natural local phrasing (Aloha, right on brah/sis, chee-hoo, pau, no sweat, got your back).\n\nAnalyze the applicant\'s response and return JSON with:\n- "action": "fill" | "skip" | "back"\n- "cleanValue": sanitized form value (clean name, digits only for phone/ssn/zip, YYYY-MM-DD for dates, or Yes/No)\n- "keokiReply": a lively, comforting 1-2 sentence reaction in Uncle Keoki\'s charming voice affirming what they said and cheering them on',
               },
               {
                 role: 'user',
-                content: `Field: "${fieldLabel}"\nPrompt: "${speechPrompt}"\nUser: "${userInput}"`,
+                content: `Target Field: "${fieldLabel}"\nUncle Keoki Prompted: "${speechPrompt}"\nApplicant Replied: "${userInput}"`,
               },
             ],
           }),
